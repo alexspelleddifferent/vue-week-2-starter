@@ -17,4 +17,16 @@ th, tr {
     font-weight: bold;
 }
 
+[v-cloak] {
+    display:none;
+}
 
+.present {
+    color:plum;
+    font-style:italic;
+}
+
+.abset {
+    color:black;
+    font-weight:bold;
+}
