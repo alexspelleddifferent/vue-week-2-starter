@@ -14,7 +14,7 @@
     <div id="app">
 
         <!-- TODO display the name of the activity -->
-        <h1 class="text-center">Time Tracker</h1>
+        <h1 class="text-center">{{activity}}! Time tracker</h1>
 
         <div id="add-hours" class="card">
 
@@ -30,7 +30,7 @@
                     <!-- TODO display name of activity in the label -->
                     <label class="form-label" for="date">What date did you do this activity?</label>
                     <!-- TODO use v-model to connect this input to dateString data -->
-                    <input id="date" class="form-control" type="date">
+                    <input id="date" class="form-control" type="date" v-model="dateString">
                     <small id="date-help" class="form-text text-muted">
                         Date must be today or in the past.
                     </small>
@@ -39,7 +39,7 @@
                 <div class="form-group">
                     <label class="form-label" for="hours">How many hours did you practice for?</label>
                     <!-- TODO use v-model to connect this input to hours data -->
-                    <input id="hours" class="form-control" type="number" min="0" max="24">
+                    <input id="hours" v-model.number='hours' class="form-control" type="number" min="0" max="24">
                     <small id="hours-help" class="form-text text-muted">
                         Enter a number of hours, more than 0, up to a maximum of 24
                     </small>
@@ -49,6 +49,9 @@
                     <label class="form-label" for="type">What type?</label>
                     <!-- TODO Create select element, use v-model to connect to the types -->
                     <!-- TODO Use v-for to create option elements, one for each type -->
+                    <select class="form-control" v-model="type">
+                        <option v-for="type in types"> {{type}}</option>
+                    </select>
                 </div>
 
                 <div class="form-label pb-2">
@@ -57,19 +60,19 @@
 
                 <div class="form-check-inline">
                     <!-- TODO v-model media -->
-                    <input id="media1" class="form-check-input" type="radio">
-                    <label class="form-check-label" for="media1">  <!--TODO Display text -->  </label>
+                    <input id="media1" class="form-check-input" type="radio" value="Traditional" v-model="medium">
+                    <label class="form-check-label" for="media1">  Traditional  </label>
                 </div>
 
                 <div class="form-check-inline">
                     <!-- TODO v-model media -->
-                    <input id="media2" class="form-check-input" type="radio">
-                    <label class="form-check-label" for="media2">  <!-- TODO Display text -->  </label>
+                    <input id="media2" class="form-check-input" type="radio" value="Digital" v-model="medium">
+                    <label class="form-check-label" for="media2">  Digital  </label>
                 </div>
 
                 <div>
                     <!-- TODO Add v-on:click -->
-                    <button class="btn btn-primary mt-2" type="button">Add record</button>
+                    <button class="btn btn-primary mt-2" type="button" v-on:click="submit">Add record</button>
                 </div>
                 
             </div>
@@ -114,7 +117,35 @@
 
     <script>
 
-    //   TODO create new Vue app here
+    let app=Vue.createApp({
+        data(){
+            return {
+                activity:'Practice Art',
+                records:[],
+                dateString:'',
+                hours:1,
+                type:'',
+                medium:'',
+                types: ['Sketch', 'Drawing', 'Painting']
+            }
+        },
+        methods: {
+            submit() {
+                let date_p = new Date(this.dateString)
+
+                let record = {
+                    date: date_p,
+                    hours: this.hours,
+                    type: this.type,
+                    medium: this.medium
+                }
+                this.records.push(record)
+            }
+        }
+
+    })
+
+    app.mount('#app')
 
     </script>
 
