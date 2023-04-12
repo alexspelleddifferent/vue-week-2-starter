@@ -22,7 +22,10 @@
             <div class="card-body">
                
                 <!-- TODO use v-if to show this if there are validation errors -->
-                <div class="alert alert-danger">
+                <div v-if="errors.length>0" class="alert alert-danger">
+                    <ul>
+                        <li v-for="error in errors">{{error}}</li>
+                    </ul>
                     <!-- TODO show a list of validation errors from form -->
                 </div>
 
@@ -70,6 +73,10 @@
                     <label class="form-check-label" for="media2">  Digital  </label>
                 </div>
 
+                <div class="form-group">
+                    <input type="checkbox" v-model="completed">
+                    <label class="form-label" for="completed">&nbspCompleted?</label>
+                </div>
                 <div>
                     <!-- TODO Add v-on:click -->
                     <button class="btn btn-primary mt-2" type="button" v-on:click="submit">Add record</button>
@@ -94,6 +101,15 @@
                             <th>Media</th>
                         </tr>
                         <!-- TODO use v-for to create one table row for each activity record -->
+                        <tr v-for="record in records" v-bind:class="{
+                                                                    drawing:(record.type=='Drawing'),
+                                                                    sketching:(record.type=='Sketch'),
+                                                                    painting:(record.type=='Painting')}">
+                            <td>{{shortdate(record.date)}}</td>
+                            <td>{{record.hours}}</td>
+                            <td>{{record.type}}</td>
+                            <td>{{record.medium}}</td>
+                        </tr>
                     </table>
                 </div>
             </div>
@@ -106,7 +122,8 @@
             <div class="card-body">
 
                 <!-- TODO add computed property to calculate the total hours -->
-                <p>You have practiced a total of <!-- TODO display total hours --> hours</p>
+                <h3>{{totalRecordsMessage}}</h3>
+                <p>You have practiced a total of {{totalPractice}} hours</p>
 
                 <!-- Challenge question! Display a list of the total hours for each type.  -->
           
@@ -126,23 +143,61 @@
                 hours:1,
                 type:'',
                 medium:'',
-                types: ['Sketch', 'Drawing', 'Painting']
+                completed: false,
+                types: ['Sketch', 'Drawing', 'Painting'],
+                errors: []
             }
         },
         methods: {
             submit() {
                 let date_p = new Date(this.dateString)
-
-                let record = {
-                    date: date_p,
-                    hours: this.hours,
-                    type: this.type,
-                    medium: this.medium
+                this.errors=[]
+                if (!this.dateString || this.dateString=='Invalid Date' || date_p > new Date()){
+                    this.errors.push('Select a valid date - today or in the past.')
                 }
-                this.records.push(record)
+                if (this.hours <=0 || this.hours > 24) {
+                    this.errors.push('Number of hours must be between 0 and 24.')
+                }
+                if (!this.type) {
+                    this.errors.push('Select a type.')
+                }
+                if (!this.medium) {
+                    this.errors.push('Select a medium.')
+                }
+                if (this.errors.length==0) {
+                    let record = {
+                        date: date_p,
+                        hours: this.hours,
+                        type: this.type,
+                        medium: this.medium
+                    }
+                    this.records.push(record)
+                    this.records.sort(function(r1, r2) {
+                        return r2.date.getTime()-r1.date.getTime()
+                    })
+                }
+            },
+            shortdate(date) {
+                return new Intl.DateTimeFormat('en-US', {timeZone:'UTC'}).format(date)
+            }
+        },
+        computed: {
+            totalRecordsMessage() {
+                let numRecords = this.records.length
+                if (numRecords===1) {
+                    return '1 record'
+                } else {
+                    return numRecords + ' records'
+                }
+            },
+            totalPractice() {
+                let total=0
+                this.records.forEach (record => {
+                    total=total+record.hours
+                })
+                return total
             }
         }
-
     })
 
     app.mount('#app')
