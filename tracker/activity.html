@@ -105,6 +105,7 @@
                             <th>Type</th>
                             <th>Media</th>
                             <th>Status</th>
+                            <th>Note</th>
                         </tr>
                         <!-- TODO use v-for to create one table row for each activity record -->
                         <tr v-for="record in records" v-bind:class="{
@@ -116,6 +117,7 @@
                             <td>{{record.type}}</td>
                             <td>{{record.medium}}</td>
                             <td>{{ComporNo(record.completed)}}</td>
+                            <td>{{trunct(record.note)}}</td>
                         </tr>
                     </table>
                 </div>
@@ -196,6 +198,14 @@
                 }
                 else {
                     return 'Not Completed'
+                }
+            },
+            trunct(note) {
+                if (note && note.length>40) {
+                    return note.substring(0,39)+'...'
+                }
+                else {
+                    return note
                 }
             }
         },
